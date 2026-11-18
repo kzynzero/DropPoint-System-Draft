@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DropPoint – System Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.441.0/dist/umd/lucide.min.js"></script>
+
+<style>
+    :root{
+        --bg:#e8e6e3;
+        --panel:#fff;
+        --ink:#3b3b3b;
+        --mut:#777;
+        --soft:#d9d9d9;
+        --line:#e3e1de;
+        --mar:#9b2226;
+        --warn:#f7d9d9;
+        --ok:#049440;
+        --amb:#c98a00;
+        --blue:#0090e0;
+        box-sizing:border-box;
+        padding-top:env(safe-area-inset-top,0px);
+        padding-bottom:env(safe-area-inset-bottom,0px)
+    }
+
+    @media(prefers-color-scheme:dark){
+        :root:not([data-theme=light]){
+            --bg:#1b1a19;
+            --panel:#272524;
+            --ink:#e8e6e3;
+            --mut:#a9a5a0;
+            --soft:#363332;
+            --line:#3d3a38;
+            --mar:#e0686c;
+            --warn:#4a2a2c
+        }
+    }
+
+    :root[data-theme=dark]{
+        --bg:#1b1a19;
+        --panel:#272524;
+        --ink:#e8e6e3;
+        --mut:#a9a5a0;
+        --soft:#363332;
+        --line:#3d3a38;
+        --mar:#e0686c;
+        --warn:#4a2a2c
+    }
+    
+    html{
+        scroll-padding-top:env(safe-area-inset-top,0px)
+    }
+
+    *{
+        box-sizing:border-box
+    }
+    
+    body{
+        margin:0;
+        background:var(--bg);
+        color:var(--ink);
+        font-family:Poppins,system-ui,sans-serif;
+        font-size:14px
+    }
+
+    .app{
+        display:grid;
+        grid-template-columns:270px 1fr;
+        gap:8px;
+        padding:14px;
+        min-height:100vh
+    }
+
+    aside,main{
+        background:var(--panel);
+        border-radius:26px;
+        padding:20px
+    }
+
+    aside{
+        position:sticky;
+        top:14px;
+        height:calc(100vh - 28px);
+        overflow:auto
+    }
+
+    .logo{
+        text-align:center;
+        margin-bottom:26px
+    }
+
+    .seal{
+        display:block;
+        width:100%;
+        max-width:190px;
+        height:auto;
+        margin:0 auto
+    }
+
+    .logo b{
+        color:var(--mar);
+        font-size:19px;
+        letter-spacing:.5px
+    }
+
+    nav a{
+        display:flex;
+        align-items:center;
+        gap:14px;
+        padding:11px 16px;
+        margin:2px 0;
+        border-radius:12px;
+        color:var(--ink);
+        text-decoration:none;
+        font-weight:500;
+        position:relative
+    }
+
+    nav a:hover{
+        background:var(--soft)
+    }
+    
+    nav a.on{
+        color:var(--mar);
+        font-weight:700
+    }
+
+    nav a.on:before{
+        content:"";
+        position:absolute;
+        left:-20px;
+        top:6px;
+        bottom:6px;
+        width:12px;
+        border-radius:0 8px 8px 0;
+        background:var(--mar)
+    }
+
+    nav i,nav svg{
+        width:20px;
+        height:20px
+    }
+
+    nav .bd{
+        margin-left:auto;
+        background:var(--mar);
+        color:#fff;
+        border-radius:99px;
+        font-size:11px;
+        padding:1px 8px
+    }
+
+    h1{color:var(--mar);
+        font-size:24px;
+        margin:0 0 18px;
+        display:flex;
+        align-items:center;
+        gap:12px;
+        flex-wrap:wrap
+    }
+
+    h1 .sp{
+        flex:1
+    }
+
+    h2{
+        font-size:18px;
+        margin:22px 0 8px;
+        font-weight:600
+    }
+
+    .pill{
+        font-size:12px;
+        font-weight:500;
+        border-radius:99px;
+        padding:4px 12px;
+        background:var(--soft);
+        color:var(--ink)
+    }
+
+    .pill.bad{
+        background:var(--mar);
+        color:#fff
+    }
+    
+    .pill.good{
+        background:var(--ok);
+        color:#fff
+    }
+
+    .strip{
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        background:var(--warn);
+        border-radius:18px;
+        padding:10px 16px
+    }
+
+    .strip.okay{
+        background:var(--soft)
+    }
+
+    .strip>div{
+        padding:2px 14px;
+        border-left:2px solid #b9a9a9;
+        display:flex;
+        flex-direction:column;
+        gap:4px
+    }
+    
+    .strip>div:first-child{
+        border:0;
+        padding-left:0
+    }
+
+    .strip small{
+        color:var(--mut);
+        display:flex;
+        justify-content:space-between
+    }
+
+    .row{
+        display:flex;
+        gap:18px;
+        flex-wrap:wrap;
+        align-items:center;font-weight:600
+    }
+
+    .num{
+        background:var(--panel);
+        border-radius:14px;
+        padding:2px 14px;
+        font-weight:700;
+        font-size:16px;
+        margin-left:4px
+    }
+
+    .dot{
+        display:inline-block;
+        width:9px;
+        height:9px;
+        border-radius:50%;
+        margin-right:5px
+    }
+    
+    .cards{
+        display:grid;
+        grid-template-columns:repeat(5,1fr);
+        gap:12px
+    }
+
+    .card{
+        color:#fff;
+        border-radius:18px;
+        padding:14px 16px;
+        min-height:120px
+    }
+
+    .card small{
+        display:flex;
+        gap:8px;
+        align-items:center;
+        font-size:13px
+    }
+
+    .card small svg{
+        width:16px;
+        height:16px
+    }
+
+    .card b{
+        display:block;
+        font-size:28px;
+        margin-top:22px;
+        letter-spacing:.5px
+    }
+
+    .split{
+        display:grid;
+        grid-template-columns:1.7fr 1fr;
+        gap:14px
+    }
+
+    .box{
+        background:var(--soft);
+        border-radius:18px;
+        padding:10px;
+        max-height:420px;
+        overflow:auto
+    }
+
+    .panel{
+        border:1px solid var(--line);
+        border-radius:18px;
+        padding:14px;
+        margin-bottom:14px
+    }
+
+    .feed{
+        display:flex;
+        flex-direction:column;
+        gap:6px
+    }
+
+    .fr{
+        display:grid;
+        grid-template-columns:70px 64px 1fr 120px 100px 22px;
+        gap:8px;
+        align-items:center;
+        background:var(--panel);
+        border-radius:12px;
+        padding:8px 12px;
+        font-size:13px
+    }
+
+    .fr.new{
+        animation:hl 1.2s
+    }
+
+    @keyframes hl{
+        from{
+            background:#bfe8cd
+        }
+    }
+
+    @media(prefers-reduced-motion:reduce){
+        .fr.new{
+            animation:none
+        }
+    }
+
+    .chip{
+        border-radius:8px;
+        padding:2px 8px;
+        font-size:11px;
+        font-weight:600;
+        white-space:nowrap;
+        display:inline-block
+    }
+
+    .c-in,.c-ok{
+        background:#d5f0df;
+        color:#066a2d
+    }
+
+    .c-out,.c-info{
+        background:#dde4ee;
+        color:#2b4a73
+    }
+
+    .c-warn{
+        background:#fbe8b8;
+        color:#7a5400
+    }
+
+    .c-bad{
+        background:#f7cfd0;
+        color:#8a1b1f
+    }
+
+    .tiles{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:10px
+    }
+
+    .tile{
+        background:var(--panel);
+        border-radius:14px;
+        padding:12px;
+        border:2px solid transparent;
+        cursor:pointer;
+        text-align:left;
+        font:inherit;
+        color:inherit
+    }
+
+    .tile.w{
+        border-color:var(--amb)
+    }
+
+    .tile.c{
+        border-color:var(--mar);
+        background:var(--warn)
+    }
+
+    .tile small{
+        display:flex;
+        gap:6px;
+        align-items:center;
+        color:var(--mut)
+    }
+
+    .tile svg{
+        width:16px;
+        height:16px
+    }
+
+    .tile b{
+        font-size:28px;
+        display:block
+    }
+
+    .tile em{
+        font-style:normal;
+        font-size:12px;
+        color:var(--mut)
+    }
+
+    table{
+        width:100%;
+        border-collapse:collapse
+    }
+
+    th{
+        text-align:left;
+        color:var(--mut);
+        font-weight:500;
+        font-size:12px;
+        padding:8px
+    }
+
+    td{
+        padding:10px 8px;
+        border-top:1px solid var(--line);
+        vertical-align:middle
+    }
+
+    .wrap{
+        overflow-x:auto
+    }
+
+    button,input,select,textarea{
+        font:inherit;
+        color:inherit
+    }
+
+    .btn{
+        background:var(--mar);
+        color:#fff;
+        border:0;
+        border-radius:10px;
+        padding:7px 14px;
+        cursor:pointer;
+        font-weight:600
+    }
+
+    .btn.ghost{
+        background:var(--soft);
+        color:var(--ink)
+    }
+    
+    .btn:focus-visible,a:focus-visible,.tile:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+        outline:3px solid var(--blue);
+        outline-offset:2px
+    }
+
+    input,select,textarea{
+        background:var(--panel);
+        border:1px solid var(--line);
+        border-radius:10px;
+        padding:8px 12px;
+        width:100%
+    }
+
+    .g2{display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:14px
+    }
+    
+    .g3{
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:14px
+    }
+
+    .stat{
+        background:var(--soft);
+        border-radius:16px;
+        padding:14px
+    }
+    
+    .stat b{
+        font-size:26px;
+        display:block
+    }
+    
+    .stat small{
+        color:var(--mut)
+    }
+
+    .bars{
+        display:flex;
+        align-items:flex-end;
+        gap:10px;
+        height:160px
+    }
+    
+    .bars div{
+        flex:1;
+        text-align:center;
+        font-size:11px;
+        color:var(--mut)
+    }
+
+    .bars span{
+        display:block;
+        background:var(--mar);
+        border-radius:8px 8px 0 0;
+        margin-bottom:4px
+    }
+
+    .tabs{
+        display:flex;
+        gap:8px;
+        margin-bottom:10px
+    }
+    
+    .tabs button{
+        border:0;
+        background:var(--soft);
+        padding:7px 16px;
+        border-radius:99px;
+        cursor:pointer
+    }
+    
+    .tabs .on{
+        background:var(--mar);
+        color:#fff
+    }
+
+    .tl{
+        border-left:3px solid var(--mar);
+        padding-left:14px;
+        margin:10px 0
+    }
+    
+    .tl p{
+        margin:0 0 10px
+    }
+
+    .sw{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        padding:10px 0;
+        border-top:1px solid var(--line)
+    }
+
+    .toast{
+        position:fixed;
+        bottom:calc(20px + env(safe-area-inset-bottom,0px));
+        left:50%;
+        transform:translateX(-50%);
+        background:#222;
+        color:#fff;
+        padding:10px 18px;
+        border-radius:12px;
+        z-index:9
+    }
+
+    .muted{
+        color:var(--mut)
+    }
+
+    @media(max-width:900px){
+        .app{
+            grid-template-columns:1fr;
+            padding:8px
+        }
+        aside{
+            position:static;
+            height:auto;
+            padding:12px
+        }
+        .logo{display:none}
+        nav{display:flex;overflow-x:auto;gap:4px}
+        nav a{white-space:nowrap;padding:9px 12px}
+        nav a.on:before{display:none}
+        nav a.on{background:var(--soft)}
+    }
+
+    .cards,.split,.g2,.g3,.strip{
+        grid-template-columns:1fr 1fr
+    }
+
+    .split{
+        grid-template-columns:1fr
+    }
+
+    .strip{
+        grid-template-columns:1fr
+    }
+
+    .strip>div{
+        border:0;padding:6px 0
+    }
+
+    .fr{
+        grid-template-columns:60px 54px 1fr 22px
+    }
+
+    .fr .hm{
+        display:none
+    }
+
+    .card b{
+        font-size:22px
+    }
+    
+    @media(max-width:520px){
+        .cards,.g2,.g3{
+            grid-template-columns:1fr
+        }
+    }
+
+</style>
+</head>
+<body>
+    <div class="app">
+        <aside><div class="logo"><img class="seal" src="logo.png" alt="DropPoint logo"></div>
+        <nav id="nav" aria-label="Main"></nav>
+        </aside>
+        <main id="main"></main>
+    </div>
+
+    <script>
+    const $=s=>document.querySelector(s),I=(n,c='')=>`<i data-lucide="${n}" class="${c}"></i>`;
+    const NAV=[['overview','layout-dashboard','Overview'],['discrepancies','radar','Discrepancies'],['pickups','shield-check','Pickups'],['alerts','siren','Alerts'],['sms','message-square-text','SMS Monitor'],['records','contact','Records'],['users','users','Users & Logs'],['reports','chart-column','Reports'],['health','activity','System Health'],['settings','settings','Settings']];
+    const NM=['Maria Santos','Juan Dela Cruz','Ana Reyes','Pedro Lim','Liza Mendoza','Carlo Bautista','Jenny Aquino','Mark Villar','Rica Manalo','Paolo Cruz','Sofia Ramos','Diego Torres'];
+    const SEC=['G7 – Narra','G8 – Bonifacio','G9 – Luna','G10 – Rizal','G11 – STEM','G12 – Mabini'];
+    const pick=a=>a[Math.floor(Math.random()*a.length)],pad=n=>String(n).padStart(2,'0');
+    const now=()=>{const d=new Date();return pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds())};
+    const S={enr:1248,campus:1012,na:156,dep:38,abs:42,pend:2,bal:450,sound:true,
+    gates:[{n:'Main Gate',on:1,hb:'4s',bat:86,v:'1.2.0'},{n:'Back Gate',on:0,hb:'6m',bat:12,v:'1.2.0'},{n:'Gym Gate',on:1,hb:'9s',bat:64,v:'1.1.9'},{n:'Side Gate',on:1,hb:'3s',bat:71,v:'1.2.0'}],
+    feed:[],
+    disc:[{id:1,n:'Liza Mendoza',s:'G9 – Luna',t:'Scanned in, absent in class',p:'P3 Science',m:18,st:'Open'},{id:2,n:'Carlo Bautista',s:'G10 – Rizal',t:'Scanned in, absent in class',p:'P3 Math',m:12,st:'Open'},{id:3,n:'Jenny Aquino',s:'G7 – Narra',t:'In class, no gate scan',p:'P2 English',m:55,st:'Under review'},{id:4,n:'Mark Villar',s:'G12 – Mabini',t:'Scanned in, absent in class',p:'P3 PE',m:7,st:'Open'}],
+    queue:[{id:1,n:'Rica Manalo',s:'G8 – Bonifacio',g:'Elena Manalo (Mother)',ok:1},{id:2,n:'Paolo Cruz',s:'G7 – Narra',g:'Unknown: Ramon Diaz',ok:0}],
+    plog:[{t:'15:42:10',n:'Sofia Ramos',g:'Luis Ramos (Father)',by:'Guard Reyes',r:'Approved'},{t:'15:38:51',n:'Diego Torres',g:'Cora Torres (Aunt)',by:'Guard Reyes',r:'Approved'}],
+    alerts:[{t:'Nov 6, 10:14',a:'Grade 9 only',m:'Class suspended after 3 PM due to weather.',by:'Sys Admin'}],
+    fsms:[{id:1,to:'+63 917 ••• 2210',m:'Time-in: Ana Reyes 07:41',e:'No signal'},{id:2,to:'+63 928 ••• 7731',m:'Time-out: Pedro Lim 15:30',e:'Timeout'},{id:3,to:'+63 905 ••• 1184',m:'Time-in: Mark Villar 07:55',e:'Invalid number'}],
+    users:[{n:'Dr. Elena Cruz',r:'School Admin',on:1},{n:'Guard Reyes',r:'Gate Guard',on:1}],
+    teachers:[{n:'Mr. Ben Soriano',id:'10001',email:'ben.soriano@school.edu'},{n:'Ms. Ivy Lopez',id:'10002',email:'ivy.lopez@school.edu'}],
+    students:[['Maria Santos','G10 – Rizal','QR-1001','Active'],['Juan Dela Cruz','G8 – Bonifacio','NFC-2044','Active'],['Ana Reyes','G12 – Mabini','QR-1388','Active'],['Pedro Lim','G9 – Luna','QR-1420','Reissue'],['Liza Mendoza','G9 – Luna','NFC-2210','Active']],
+    guardians:[['Elena Manalo','Rica Manalo','Mother','ID verified'],['Luis Ramos','Sofia Ramos','Father','ID verified'],['Cora Torres','Diego Torres','Aunt','Pending ID']],
+    audit:[['09:12','Sys Admin','Revealed guardian contact','Maria Santos'],['09:05','Dr. Cruz','Exported attendance CSV','Grade 10'],['08:47','Sys Admin','Reissued QR ID','Pedro Lim'],['08:30','Guard Reyes','Approved pickup','Sofia Ramos']]};
+    const savedAdminData=JSON.parse(localStorage.getItem('dropPointAdminData')||'null');
+    if(savedAdminData){S.students=savedAdminData.students||S.students;S.guardians=savedAdminData.guardians||S.guardians;S.users=(savedAdminData.users||S.users).filter(u=>u.r!='Teacher');S.teachers=savedAdminData.teachers||S.teachers;S.enr=savedAdminData.enr||S.enr}
+    function scan(){const on=S.gates.filter(g=>g.on),dir=Math.random()<.7?'IN':'OUT',st=Math.random()<.08?'dup':'';
+    S.feed.unshift({t:now(),d:dir,n:pick(NM),s:pick(SEC),g:pick(on).n,m:Math.random()<.7?'qr-code':'smartphone-nfc',st,fresh:1});S.feed=S.feed.slice(0,50);
+    if(!st){if(dir=='IN'){S.campus++;S.na=Math.max(0,S.na-1)}else{S.campus--;S.dep++}}}
+    for(let i=0;i<9;i++){scan();S.feed[0].fresh=0}
+    let route='overview',tab='Students',q='',trace=null;
+    const openD=()=>S.disc.filter(d=>d.st!='Resolved'),unv=()=>S.queue.filter(x=>!x.ok).length;
+    const toast=m=>{const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2200)};
+    const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const issues=()=>S.gates.filter(g=>!g.on).length+(S.fsms.length?1:0)+(S.pend>10?1:0);
+    const chip=(c,t)=>`<span class="chip c-${c}">${t}</span>`;
+    const stc={Open:'bad','Under review':'warn',Resolved:'ok',Approved:'ok',Denied:'bad'};
+    const tbl=(h,r)=>`<div class="wrap"><table><thead><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${r.map(x=>`<tr>${x.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    const head=(t,x='')=>`<h1>${t}<span class="sp"></span>${x}<span class="pill ${issues()?'bad':'good'}">${issues()?issues()+' issues':'All systems normal'}</span></h1>`;
+    function nav(){$('#nav').innerHTML=NAV.map(([k,i,l])=>`<a href="#${k}" class="${k==route?'on':''}" ${k==route?'aria-current="page"':''}>${I(i)}${l}${k=='discrepancies'&&openD().length?`<span class="bd">${openD().length}</span>`:''}</a>`).join('')}
+    const feedRow=f=>`<div class="fr ${f.fresh?'new':''}"><span class="muted">${f.t}</span>${chip(f.d=='IN'?'in':'out',f.d=='IN'?'↳ IN':'↰ OUT')}<span><b>${f.n}</b> ${f.st?chip('warn','Duplicate scan'):''}</span><span class="hm">${f.s}</span><span class="hm">${f.g}</span>${I(f.m)}</div>`;
+    const P={
+    overview(){const off=S.gates.filter(g=>!g.on).length,on=S.gates.length-off,fs=S.fsms.length,d=openD().length,u=unv();
+    const tile=(k,i,l,n,ctx,cls)=>`<button class="tile ${n?cls:''}" onclick="go('${k}')">${'<small>'+I(i)+l+'</small>'}<b>${n}</b><em>${n?ctx:'All clear'}</em></button>`;
+    const C=[['#0090e0','users','Total Enrolled',S.enr],['#049440','building-2','On Campus',S.campus],['#6b3f37','hourglass','Not Arrived',S.na],['#2b2b1b','log-out','Departed',S.dep],['#96282d','user-x','Absent',S.abs]];
+    return head('Command Center')+`<h2 style="margin-top:0">Status</h2><div class="strip ${off?'':'okay'}"><div><small>Gate Terminals</small><div class="row"><span><span class="dot" style="background:#049440"></span>Online:<span class="num">${on}</span></span><span><span class="dot" style="background:#e00"></span>Offline:<span class="num">${off}</span></span></div></div><div><small>SMS Gateway<span style="color:#049440;font-style:italic">Connected</span></small><div class="row">Balance:<span class="num">₱ ${S.bal.toFixed(2)}</span></div></div><div><small>Sync Queue<i>Last sync 2m ago</i></small><div class="row"><span><span class="dot" style="background:#e6c200"></span>Pending:<span class="num">${S.pend}</span></span></div></div></div>
+    <h2>Summary</h2><div class="cards">${C.map(c=>`<div class="card" style="background:${c[0]}"><small>${I(c[1])}${c[2]}</small><b>${c[3].toLocaleString()}</b></div>`).join('')}</div>
+    <div class="split"><div><h2>Live Tap Feed</h2><div class="box"><div class="feed" id="feed">${S.feed.map(feedRow).join('')}</div></div></div><div><h2>Needs Attention</h2><div class="tiles">${tile('alerts','siren','Emergency',0,'','c')}${tile('discrepancies','radar','Discrepancies',d,'oldest '+Math.max(...openD().map(x=>x.m),0)+' min','w')}${tile('sms','message-square-warning','Failed SMS',fs,'Retry in SMS Monitor','w')}${tile('pickups','shield-alert','Unverified Pickups',u,'Review now','c')}</div></div></div>`},
+    discrepancies(){return head('Discrepancies')+`<p class="muted">Gate scans compared with classroom attendance. Select a status to move a flag forward.</p><div class="panel">${tbl(['Student','Section','Type','Period','Unaccounted','Status',''],S.disc.map(d=>[`<b>${d.n}</b>`,d.s,d.t,d.p,d.m+' min',chip(stc[d.st],d.st),d.st=='Resolved'?'':`<button class="btn ghost" onclick="adv(${d.id})">${d.st=='Open'?'Start review':'Mark resolved'}</button>`]))}</div>`},
+    pickups(){return head('Pickups')+`<h2 style="margin-top:0">Dismissal queue</h2><div class="panel">${S.queue.length?tbl(['Student','Section','Guardian','Match',''],S.queue.map(x=>[`<b>${x.n}</b>`,x.s,x.g,x.ok?chip('ok','Registered guardian'):chip('bad','Not on file'),`<button class="btn" onclick="rel(${x.id},1)">Approve</button> <button class="btn ghost" onclick="rel(${x.id},0)">Deny</button>`])):'<p class="muted">No students waiting for release.</p>'}</div><h2>Handoff ledger</h2><div class="panel">${tbl(['Time','Student','Guardian','Verified by','Result'],S.plog.map(x=>[x.t,x.n,x.g,x.by,chip(stc[x.r],x.r)]))}</div>`},
+    alerts(){return head('Alerts')+`<div class="g2"><div class="panel"><h2 style="margin-top:0">Emergency broadcast</h2><label>Audience<select id="aud"><option>All parents</option><option>Grade 7 only</option><option>Grade 9 only</option><option>Grade 12 only</option></select></label><p><label>Message<textarea id="msg" rows="3" placeholder="Type the SMS to send"></textarea></label></p><button class="btn" onclick="bcast()">Send broadcast</button></div><div class="panel"><h2 style="margin-top:0">Last seen trace</h2><input id="tq" placeholder="Search student name" value="${trace?trace.n:''}"><p><button class="btn" onclick="doTrace()">Trace student</button></p>${trace?`<div class="tl"><p><b>${trace.n}</b> · ${trace.s}</p><p>07:42 Gate scan in (Main Gate)</p><p>08:00 Class check: present (P1)</p><p>10:05 Class check: absent (P3)</p><p>No gate scan out. No pickup recorded.</p></div>`:'<p class="muted">Shows the last gate scan, class check and pickup for one student.</p>'}</div></div><h2>Alert history</h2><div class="panel">${tbl(['Sent','Audience','Message','By'],S.alerts.map(a=>[a.t,a.a,a.m,a.by]))}</div>`},
+    sms(){return head('SMS Monitor')+`<div class="g3"><div class="stat"><small>Delivery rate today</small><b>${(98.2).toFixed(1)}%</b></div><div class="stat"><small>Average dispatch time</small><b>1.8 s</b></div><div class="stat"><small>Load balance</small><b>₱ ${S.bal.toFixed(2)}</b></div></div><h2>Failed messages</h2><div class="panel">${S.fsms.length?`<p><button class="btn" onclick="retry()">Retry all</button></p>`+tbl(['To','Message','Reason',''],S.fsms.map(f=>[f.to,f.m,chip('bad',f.e),`<button class="btn ghost" onclick="retry(${f.id})">Retry</button>`])):'<p class="muted">No failed messages.</p>'}</div><h2>Message templates</h2><div class="g2"><div class="panel"><b>Time-in</b><textarea rows="2">DropPoint: {student} arrived at school at {time}.</textarea></div><div class="panel"><b>Time-out</b><textarea rows="2">DropPoint: {student} left school at {time}.</textarea></div></div><button class="btn" onclick="toast('Templates saved')">Save templates</button>`},
+    records(){const rows=(tab=='Students'?S.students:S.guardians).filter(r=>r.join(' ').toLowerCase().includes(q.toLowerCase()));
+    const form=tab=='Students'?`<div class="panel"><h2 style="margin-top:0">Add student</h2><div class="g3"><input id="recordName" aria-label="Student name" placeholder="Student name"><select id="recordSection" aria-label="Section">${SEC.map(s=>`<option>${s}</option>`).join('')}</select><input id="recordTag" aria-label="Student ID tag" placeholder="ID tag"></div><p><button class="btn" onclick="addRecord()">Add student</button></p></div>`:`<div class="panel"><h2 style="margin-top:0">Add guardian</h2><div class="g3"><input id="guardianName" aria-label="Guardian name" placeholder="Guardian name"><select id="guardianStudent" aria-label="Student">${S.students.map(s=>`<option>${esc(s[0])}</option>`).join('')}</select><input id="guardianRelation" aria-label="Relationship" placeholder="Relationship"></div><p><button class="btn" onclick="addRecord()">Add guardian</button></p></div>`;
+    const tableRows=rows.map(r=>{const i=(tab=='Students'?S.students:S.guardians).indexOf(r);return [`<b>${esc(r[0])}</b>`,esc(r[1]),esc(r[2]),chip(/Active|verified/.test(r[3])?'ok':'warn',esc(r[3])),`<button class="btn ghost" onclick="deleteRecord('${tab=='Students'?'students':'guardians'}',${i})">Delete</button>`]});
+    return head('Records','<button class="btn" onclick="toast(\'Select a CSV to import\')">Bulk import CSV</button>')+`<div class="tabs">${['Students','Guardians'].map(t=>`<button class="${t==tab?'on':''}" onclick="tab='${t}';q='';render()">${t}</button>`).join('')}</div>${form}<input id="rq" placeholder="Search ${tab.toLowerCase()}" value="${esc(q)}" oninput="q=this.value;render(1)" style="max-width:320px;margin-bottom:10px"><div class="panel">${tbl(tab=='Students'?['Name','Section','ID tag','Status','']:['Guardian','Student','Relation','Verification',''],tableRows)}</div>`},
+    users(){const accounts=teacherAccounts();return head('Users & Logs')+`<h2 style="margin-top:0">Teacher directory</h2><p class="muted">Only teachers listed here can create an account. Each teacher ID can be used once.</p><div class="panel"><h2 style="margin-top:0">Add authorized teacher</h2><div class="g3"><input id="teacherName" aria-label="Teacher name" placeholder="Full name"><input id="teacherIdNumber" aria-label="Teacher ID number" inputmode="numeric" pattern="[0-9]+" placeholder="Teacher ID number"><input id="teacherEmail" type="email" aria-label="Teacher email" placeholder="Teacher email"></div><p><button class="btn" onclick="addTeacher()">Add teacher</button></p></div><div class="panel">${tbl(['Teacher','ID number','Directory email','Account','Account username / email',''],S.teachers.map((t,i)=>{const a=accounts.find(x=>x.id==t.id);return [`<b>${esc(t.n)}</b>`,esc(t.id),esc(t.email),a?chip('ok','Created'):chip('warn','No account'),a?`${esc(a.username)}<br>${esc(a.email)} <button class="btn ghost" onclick="removeTeacherAccount('${esc(t.id)}')">Delete account</button>`:'—',`<button class="btn ghost" onclick="deleteTeacher(${i})">Delete teacher</button>`]}))}</div><h2>Other users</h2><div class="panel"><h2 style="margin-top:0">Add user</h2><div class="g3"><input id="userName" aria-label="User name" placeholder="Name"><select id="userRole" aria-label="Role"><option>School Admin</option><option>Gate Guard</option></select><button class="btn" onclick="addUser()">Add user</button></div></div><div class="panel">${tbl(['Name','Role','Account',''],S.users.map((u,i)=>[`<b>${esc(u.n)}</b>`,esc(u.r),chip(u.on?'ok':'bad',u.on?'Active':'Disabled'),`<button class="btn ghost" onclick="S.users[${i}].on^=1;saveAdminData();render()">${u.on?'Disable':'Enable'}</button> <button class="btn ghost" onclick="deleteUser(${i})">Delete</button>`]))}</div><h2>Access trail</h2><div class="panel">${tbl(['Time','User','Action','Record'],S.audit.map(r=>r.map(esc)))}</div>`},
+    reports(){const d=[['Mon',96],['Tue',95],['Wed',97],['Thu',93],['Fri',90]],h=[['6',20],['7',92],['8',45],['12',25],['15',88],['16',40]];const bar=a=>`<div class="bars">${a.map(x=>`<div><span style="height:${x[1]*1.4}px"></span>${x[0]}</div>`).join('')}</div>`;
+    return head('Reports','<button class="btn" onclick="toast(\'Report exported\')">Export CSV</button>')+`<div class="g2"><div class="panel"><b>Daily attendance rate (%)</b>${bar(d)}</div><div class="panel"><b>Peak gate traffic (hour of day)</b>${bar(h)}</div></div><div class="g3"><div class="stat"><small>Late arrivals this week</small><b>64</b></div><div class="stat"><small>Early departures</small><b>21</b></div><div class="stat"><small>Average on-campus time</small><b>8h 12m</b></div></div>`},
+    health(){return head('System Health')+`<div class="g3"><div class="stat"><small>Scan latency (avg)</small><b>0.6 s</b></div><div class="stat"><small>SMS success rate</small><b>98.2%</b></div><div class="stat"><small>Discrepancy accuracy</small><b>94%</b></div></div><h2>Device registry</h2><div class="panel">${tbl(['Terminal','Status','Last heartbeat','Battery','App version'],S.gates.map(g=>[`<b>${g.n}</b>`,chip(g.on?'ok':'bad',g.on?'Online':'Offline'),g.hb+' ago',g.bat+'%',g.v]))}</div><p>Offline buffer: <b>${S.pend}</b> scans waiting to sync. <button class="btn ghost" onclick="S.pend=0;render();toast('Sync complete')">Sync now</button></p>`},
+    settings(){const sw=(l,c)=>`<div class="sw"><span>${l}</span><input type="checkbox" ${c?'checked':''} style="width:auto"></div>`;
+    return head('Settings')+`<div class="g2"><div class="panel"><h2 style="margin-top:0">Time windows</h2><p><label>Gates open<input type="time" value="06:00"></label></p><p><label>Late after<input type="time" value="07:30"></label></p><p><label>Escalate unresolved flags after (minutes)<input type="number" value="15"></label></p></div><div class="panel"><h2 style="margin-top:0">Preferences</h2>${sw('Sound for emergency alerts',1)}${sw('Auto-SMS parents on escalation',0)}${sw('Mask student names by default',1)}${sw('Daily backup',1)}<p>Data retention (years)<input type="number" value="3"></p></div></div><button class="btn" onclick="toast('Settings saved')">Save settings</button>`}};
+    function render(keep){const m=$('#main'),f=document.activeElement&&document.activeElement.id,pos=document.activeElement&&document.activeElement.selectionStart;m.innerHTML=P[route]();nav();lucide.createIcons();if(keep&&f){const e=$('#'+f);if(e){e.focus();e.setSelectionRange(pos,pos)}}}
+    function go(r){location.hash=r}
+    const teacherAccounts=()=>JSON.parse(localStorage.getItem('dropPointTeacherAccounts')||'[]');
+    function saveAdminData(){localStorage.setItem('dropPointAdminData',JSON.stringify({students:S.students,guardians:S.guardians,users:S.users,teachers:S.teachers,enr:S.enr}))}
+    saveAdminData();
+    function addRecord(){if(tab=='Students'){const n=$('#recordName').value.trim(),sec=$('#recordSection').value,tag=$('#recordTag').value.trim();if(!n||!tag)return toast('Enter a student name and ID tag');if(S.students.some(r=>r[2].toLowerCase()==tag.toLowerCase()))return toast('That ID tag is already in use');S.students.push([n,sec,tag,'Active']);S.enr++}else{const n=$('#guardianName').value.trim(),student=$('#guardianStudent').value,relation=$('#guardianRelation').value.trim();if(!n||!student||!relation)return toast('Enter the guardian details');S.guardians.push([n,student,relation,'Pending ID'])}S.audit.unshift([now(),'Sys Admin','Added '+tab.slice(0,-1).toLowerCase(),tab=='Students'?S.students[S.students.length-1][0]:S.guardians[S.guardians.length-1][0]]);saveAdminData();render();toast(tab.slice(0,-1)+' added')}
+    function deleteRecord(type,index){const row=S[type][index];if(!row)return;const linked=type=='students'?S.guardians.filter(g=>g[1]==row[0]):[];const detail=linked.length?' This also removes '+linked.length+' linked guardian record(s).':'';if(!window.confirm('Delete this '+(type=='students'?'student':'guardian')+' record?'+detail))return;S[type].splice(index,1);if(type=='students'){S.enr=Math.max(0,S.enr-1);S.guardians=S.guardians.filter(g=>g[1]!=row[0])}S.audit.unshift([now(),'Sys Admin','Deleted '+(type=='students'?'student':'guardian'),row[0]]);saveAdminData();render();toast('Record deleted')}
+    function addTeacher(){const n=$('#teacherName').value.trim(),id=$('#teacherIdNumber').value.trim(),email=$('#teacherEmail').value.trim();if(!n||!/^\d+$/.test(id)||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return toast('Enter the teacher name, a valid email, and numeric ID');if(S.teachers.some(t=>t.id==id))return toast('That teacher ID is already in the directory');S.teachers.push({n,id,email});S.audit.unshift([now(),'Sys Admin','Added authorized teacher',id+' · '+n]);saveAdminData();render();toast('Teacher added to the directory')}
+    function deleteTeacher(index){const teacher=S.teachers[index];if(!teacher)return;const accounts=teacherAccounts();if(!window.confirm('Delete this teacher from the directory? Any existing account for this ID will also be revoked.'))return;S.teachers.splice(index,1);localStorage.setItem('dropPointTeacherAccounts',JSON.stringify(accounts.filter(a=>a.id!=teacher.id)));S.audit.unshift([now(),'Sys Admin','Deleted teacher',teacher.id+' · '+teacher.n]);saveAdminData();render();toast('Teacher deleted')}
+    function removeTeacherAccount(id){if(!window.confirm('Delete this teacher account?'))return;const accounts=teacherAccounts(),account=accounts.find(a=>a.id==id);if(!account)return;localStorage.setItem('dropPointTeacherAccounts',JSON.stringify(accounts.filter(a=>a.id!=id)));S.audit.unshift([now(),'Sys Admin','Deleted teacher account',id+' · '+account.username]);render();toast('Teacher account deleted')}
+    function addUser(){const n=$('#userName').value.trim(),r=$('#userRole').value;if(!n)return toast('Enter a user name');if(S.users.some(u=>u.n.toLowerCase()==n.toLowerCase()))return toast('That user already exists');S.users.push({n,r,on:1});S.audit.unshift([now(),'Sys Admin','Added user',n]);saveAdminData();render();toast('User added')}
+    function deleteUser(index){if(!window.confirm('Delete this user?'))return;const user=S.users[index];if(!user)return;S.users.splice(index,1);S.audit.unshift([now(),'Sys Admin','Deleted user',user.n]);saveAdminData();render();toast('User deleted')}
+    function adv(id){const d=S.disc.find(x=>x.id==id);d.st=d.st=='Open'?'Under review':'Resolved';S.audit.unshift([now().slice(0,5),'Sys Admin','Flag '+d.st.toLowerCase(),d.n]);render();toast('Flag: '+d.st)}
+    function rel(id,ok){const x=S.queue.find(q=>q.id==id);S.queue=S.queue.filter(q=>q.id!=id);S.plog.unshift({t:now(),n:x.n,g:x.g,by:'Sys Admin',r:ok?'Approved':'Denied'});render();toast(ok?'Pickup approved':'Pickup denied')}
+    function retry(id){S.fsms=id?S.fsms.filter(f=>f.id!=id):[];render();toast('Message queued for retry')}
+    function bcast(){const m=$('#msg').value.trim();if(!m)return toast('Enter a message first');S.alerts.unshift({t:'Today, '+now().slice(0,5),a:$('#aud').value,m,by:'Sys Admin'});render();toast('Broadcast sent')}
+    function doTrace(){const v=$('#tq').value.toLowerCase(),f=NM.find(n=>n.toLowerCase().includes(v));if(!v||!f)return toast('No student found');trace={n:f,s:pick(SEC)};render()}
+    function route_(){const h=location.hash.slice(1);route=P[h]?h:'overview';render()}
+    addEventListener('hashchange',route_);addEventListener('storage',e=>{if(e.key=='dropPointTeacherAccounts'&&route=='users')render()});route_();
+    setInterval(()=>{scan();if(route=='overview'&&!document.querySelector('.box:hover'))render()},5000);
+    </script>
+</body>
+</html>
